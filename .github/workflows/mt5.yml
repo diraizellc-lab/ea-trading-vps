@@ -1,0 +1,33 @@
+name: MT5 EA Test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  run-mt5:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download MT5
+        shell: powershell
+        run: |
+          Invoke-WebRequest `
+            -Uri "https://download.mql5.com/cdn/web/metaquotes.software.corp/mt5/mt5setup.exe" `
+            -OutFile "$env:TEMP\mt5setup.exe"
+
+      - name: Install MT5
+        shell: powershell
+        run: |
+          Start-Process `
+            -FilePath "$env:TEMP\mt5setup.exe" `
+            -ArgumentList "/auto" `
+            -Wait
+
+      - name: Check EA files
+        shell: powershell
+        run: |
+          Write-Host "Files in EA folder:"
+          Get-ChildItem -Path ".\EA" -Recurse
